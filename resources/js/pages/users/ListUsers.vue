@@ -1,13 +1,11 @@
 <script setup>
 import axios from 'axios';
 import { ref, onMounted, reactive } from 'vue';
+import { Form, Field } from 'vee-validate';
+import * as yup from 'yup';
 
 const users = ref([]);
-const form = reactive({
-    name: '',
-    email: '',
-    password: '',
-});
+
 const getUsers = () => {
     axios.get('/api/users')
         .then((response) => {
@@ -19,16 +17,21 @@ onMounted(() => {
     getUsers();
 });
 
-const createUser = () => {
-    axios.post('/api/users', form)
+const createUser = (values, { resetForm }) => {
+    axios.post('/api/users', values)
         .then((response) => {
             users.value.unshift(response.data);
-            form.name = "";
-            form.email = "";
-            form.password = "";
             $('#createUserModal').modal('hide');
+            resetForm();
         });
-}
+};
+
+const schema = yup.object({
+    name: yup.string().required(),
+    email: yup.string().email().required(),
+    password: yup.string().required().min(8),
+});
+
 </script>
 <template>
     <div class="content-header">
@@ -71,7 +74,8 @@ const createUser = () => {
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ user.name }}</td>
                                 <td>{{ user.email }}</td>
-                                <td>{{ user.created_at }}</td>
+                                <td>{{ new Date(user.created_at).toLocaleDateString() }} - {{ new
+                                    Date(user.created_at).toLocaleTimeString() }}</td>
                                 <td>-</td>
                                 <td>-</td>
                             </tr>
@@ -95,32 +99,33 @@ const createUser = () => {
                 <!-- Modal Body -->
                 <div class="modal-body">
                     <!-- Form to insert Name, Email, and Password -->
-                    <form>
+                    <Form @submit="createUser" :validation-schema="schema" v-slot="{ errors }">
                         <div class="form-group">
                             <label for="name">Name:</label>
-                            <input v-model="form.name" type="text" class="form-control" id="name"
-                                placeholder="Enter your name">
+                            <Field name="name" type="text" class="form-control" id="name"
+                                :class="{ 'is-invalid': errors.name }" placeholder="Enter your name" />
+                            <span class="invalid-feedback">{{ errors.name }}</span>
                         </div>
                         <div class="form-group">
                             <label for="email">Email:</label>
-                            <input v-model="form.email" type="email" class="form-control" id="email"
-                                placeholder="Enter your email">
+                            <Field name="email" type="email" class="form-control" :class="{ 'is-invalid': errors.email }"
+                                id="email" placeholder="Enter your email" />
+                            <span class="invalid-feedback">{{ errors.email }}</span>
                         </div>
                         <div class="form-group">
                             <label for="password">Password:</label>
-                            <input v-model="form.password" type="password" class="form-control" id="password"
-                                placeholder="Enter your password">
+                            <Field name="password" type="password" class="form-control"
+                                :class="{ 'is-invalid': errors.password }" id="password" placeholder="Enter your password" />
+                            <span class="invalid-feedback">{{ errors.password }}</span>
                         </div>
 
-                    </form>
+                        <!-- Modal Footer -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </Form>
                 </div>
-
-                <!-- Modal Footer -->
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" @click="createUser" class="btn btn-primary">Save</button>
-                </div>
-
             </div>
         </div>
     </div>
