@@ -1,7 +1,0 @@
-git init
-git pull https://github.com/ilxBoschetto/laravel-vue-project.git
-composer update --ignore-platform-reqs
-npm install vue
-npm install jquery
-npm install vee-validate --save
-npm install -S yup
