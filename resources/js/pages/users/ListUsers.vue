@@ -5,6 +5,9 @@ import { Form, Field } from 'vee-validate';
 import * as yup from 'yup';
 
 const users = ref([]);
+const editing = ref(false);
+const formValues = ref({});
+const form = ref(null);
 
 const getUsers = () => {
     axios.get('/api/users')
@@ -21,7 +24,7 @@ const createUser = (values, { resetForm }) => {
     axios.post('/api/users', values)
         .then((response) => {
             users.value.unshift(response.data);
-            $('#createUserModal').modal('hide');
+            $('#userFormModal').modal('hide');
             resetForm();
         });
 };
@@ -31,6 +34,23 @@ const schema = yup.object({
     email: yup.string().email().required(),
     password: yup.string().required().min(8),
 });
+
+const addUser = () => {
+    editing.value = false;
+    $('#userFormModal').modal('show');
+}
+const editUser = (user) => {
+    editing.value = true;
+    form.value.resetForm();
+    formValues.value = {
+        id: user.id,
+        name: user.name,
+        email: user.email
+    };
+    $('#userFormModal').modal('show');
+
+    console.log(formValues.value);
+}
 
 </script>
 <template>
@@ -50,11 +70,11 @@ const schema = yup.object({
         </div>
     </div>
 
-    
+
 
     <div class="content">
         <div class="container-fluid">
-            <button type="button" class="mb-2 btn btn-primary" data-toggle="modal" data-target="#createUserModal">
+            <button @click="addUser()" type="button" class="mb-2 btn btn-primary">
                 Add New User
             </button>
             <div class="card">
@@ -78,7 +98,12 @@ const schema = yup.object({
                                 <td>{{ new Date(user.created_at).toLocaleDateString() }} - {{ new
                                     Date(user.created_at).toLocaleTimeString() }}</td>
                                 <td>-</td>
-                                <td>-</td>
+                                <td>
+                                    <a href="#" @click.prevent="editUser(user)">
+                                        <i class="fa fa-edit">
+                                        </i>
+                                    </a>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -87,20 +112,23 @@ const schema = yup.object({
         </div>
     </div>
     <!-- The Modal -->
-    <div class="modal fade" id="createUserModal">
+    <div class="modal fade" id="userFormModal">
         <div class="modal-dialog">
             <div class="modal-content">
 
                 <!-- Modal Header -->
                 <div class="modal-header">
-                    <h4 class="modal-title">Insert Information</h4>
-                    <button type="button" class="close" data-dismiss="modal"></button>
+                    <h4 class="modal-title">
+                        <span v-if="editing">Edit User</span>
+                        <span v-else>Insert User</span>
+                    </h4>
                 </div>
 
                 <!-- Modal Body -->
                 <div class="modal-body">
                     <!-- Form to insert Name, Email, and Password -->
-                    <Form @submit="createUser" :validation-schema="schema" v-slot="{ errors }">
+                    <Form ref="form" @submit="createUser" :validation-schema="schema" v-slot="{ errors }"
+                        :initial-values="formValues">
                         <div class="form-group">
                             <label for="name">Name:</label>
                             <Field name="name" type="text" class="form-control" id="name"
@@ -116,7 +144,8 @@ const schema = yup.object({
                         <div class="form-group">
                             <label for="password">Password:</label>
                             <Field name="password" type="password" class="form-control"
-                                :class="{ 'is-invalid': errors.password }" id="password" placeholder="Enter your password" />
+                                :class="{ 'is-invalid': errors.password }" id="password"
+                                placeholder="Enter your password" />
                             <span class="invalid-feedback">{{ errors.password }}</span>
                         </div>
 
