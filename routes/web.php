@@ -16,6 +16,7 @@ use App\Http\Controllers\ApplicationController;
 */
 Route::get('/api/users', [UserController::class, 'listUsers']);
 Route::post('/api/users', [UserController::class, 'store']);
+Route::put('/api/users/{users}', [UserController::class, 'update']);
 
 Route::get('/', function () {
     return view('welcome');
