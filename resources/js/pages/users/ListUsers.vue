@@ -6,7 +6,7 @@ import * as yup from 'yup';
 
 const users = ref([]);
 const editing = ref(false);
-const formValues = ref({});
+let formValues = ref({});
 const form = ref(null);
 
 const getUsers = () => {
@@ -47,6 +47,7 @@ const editUser = (user) => {
         name: user.name,
         email: user.email
     };
+    form.value.setValues(formValues.value);
     $('#userFormModal').modal('show');
 
     console.log(formValues.value);
@@ -127,8 +128,7 @@ const editUser = (user) => {
                 <!-- Modal Body -->
                 <div class="modal-body">
                     <!-- Form to insert Name, Email, and Password -->
-                    <Form ref="form" @submit="createUser" :validation-schema="schema" v-slot="{ errors }"
-                        :initial-values="formValues">
+                    <Form ref="form" @submit="createUser" :validation-schema="schema" v-slot="{ errors }">
                         <div class="form-group">
                             <label for="name">Name:</label>
                             <Field name="name" type="text" class="form-control" id="name"
