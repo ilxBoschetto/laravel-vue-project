@@ -32,4 +32,11 @@ class UserController extends Controller
         ]);
         return $user;
     }
+
+    public function delete($id)
+    {
+        $user = User::find($id);
+        $user->delete();
+        return 1;
+    }
 }

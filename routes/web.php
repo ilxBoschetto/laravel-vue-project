@@ -16,8 +16,10 @@ use App\Http\Controllers\ApplicationController;
 */
 
 Route::put('/api/users/{id}', [UserController::class, 'update']);
+Route::delete('/api/users/{id}', [UserController::class, 'delete']);
 Route::get('/api/users', [UserController::class, 'listUsers']);
 Route::post('/api/users', [UserController::class, 'store']);
+
 
 
 Route::get('/', function () {

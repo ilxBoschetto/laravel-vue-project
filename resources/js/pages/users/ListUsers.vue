@@ -9,16 +9,33 @@ const editing = ref(false);
 let formValues = ref({});
 const form = ref(null);
 
+const loadingCallback = (isLoading) => {
+    if (isLoading) {
+        $('#spinner-wheel').removeClass('d-none');
+        $('#spinner-wheel').addClass('d-flex');
+    } else {
+        $('#spinner-wheel').addClass('d-none');
+        $('#spinner-wheel').removeClass('d-flex');
+    }
+}
+
+
 const getUsers = () => {
+    loadingCallback(true);
     axios.get('/api/users')
         .then((response) => {
             users.value = response.data;
+            loadingCallback(false);
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+            console.log(error);
+            loadingCallback(false);
+        });
 }
 onMounted(() => {
     getUsers();
 });
+
 
 const createUser = (values, { resetForm }) => {
     axios.post('/api/users', values)
@@ -57,6 +74,16 @@ const editUser = (user) => {
     };
     form.value.setValues(formValues.value);
     $('#userFormModal').modal('show');
+}
+
+const deleteUser = (id) => {
+    axios.delete('/api/users/' + id)
+        .then((response) => {
+            if (response.status = 200) {
+                const index = users.value.findIndex(user => user.id === id);
+                users.value.splice(index, 1);
+            }
+        })
 }
 
 const handleSubmit = (values) => {
@@ -106,7 +133,7 @@ const updateUser = (values) => {
             </button>
             <div class="card">
                 <div class="card-body">
-                    <table class="table table-bordered">
+                    <table id="users-table" class="table table-bordered">
                         <thead>
                             <tr>
                                 <th style="width: 10px">#</th>
@@ -117,7 +144,9 @@ const updateUser = (values) => {
                                 <th>Options</th>
                             </tr>
                         </thead>
+
                         <tbody>
+
                             <tr v-for="(user, index) in users" :key="user.id">
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ user.name }}</td>
@@ -126,14 +155,22 @@ const updateUser = (values) => {
                                     Date(user.created_at).toLocaleTimeString() }}</td>
                                 <td>-</td>
                                 <td>
-                                    <a href="#" @click.prevent="editUser(user)">
+                                    <a href="#" class="m-1" @click.prevent="editUser(user)">
                                         <i class="fa fa-edit">
                                         </i>
+                                    </a>
+                                    <a href="#" class="m-1" @click.prevent="deleteUser(user.id)">
+                                        <i class="fa fa-trash"></i>
                                     </a>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                    <div id="spinner-wheel" class="d-flex m-3 justify-content-center">
+                        <div class="spinner-border opacity-50" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
