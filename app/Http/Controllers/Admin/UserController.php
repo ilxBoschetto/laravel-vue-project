@@ -16,6 +16,9 @@ class UserController extends Controller
 
     public function store()
     {
+        request()->validate([
+            'email' => 'required|unique:users,email',
+        ]);
         return User::create([
             "name" => request("name"),
             "email" => request("email"),
@@ -25,6 +28,9 @@ class UserController extends Controller
     public function update($id)
     {
         $user = User::find($id);
+        request()->validate([
+            "email"=> 'required|unique:users,email',
+        ]);
         $user->update([
             "name" => request("name"),
             "email" => request("email"),

@@ -1,6 +1,6 @@
 <script setup>
 import axios from 'axios';
-import { ref, onMounted, reactive } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Form, Field } from 'vee-validate';
 import * as yup from 'yup';
 
@@ -28,7 +28,6 @@ const getUsers = () => {
             loadingCallback(false);
         })
         .catch(error => {
-            console.log(error);
             loadingCallback(false);
         });
 }
@@ -37,12 +36,18 @@ onMounted(() => {
 });
 
 
-const createUser = (values, { resetForm }) => {
+const createUser = (values, { setErrors }) => {
     axios.post('/api/users', values)
         .then((response) => {
             users.value.unshift(response.data);
             $('#userFormModal').modal('hide');
-            resetForm();
+            form.value.resetForm();;
+        })
+        .catch((error) => {
+            if (error.response.data.errors) {
+                setErrors(error.response.data.errors);
+            }
+
         });
 };
 
@@ -62,6 +67,7 @@ const editUserSchema = yup.object({
 
 const addUser = () => {
     editing.value = false;
+    form.value.resetForm();
     $('#userFormModal').modal('show');
 }
 const editUser = (user) => {
@@ -86,24 +92,27 @@ const deleteUser = (id) => {
         })
 }
 
-const handleSubmit = (values) => {
+const handleSubmit = (values, actions) => {
     if (editing.value) {
-        updateUser(values);
+        updateUser(values, actions);
     } else {
-        createUser(values);
+        createUser(values, actions);
     }
 }
 
-const updateUser = (values) => {
+const updateUser = (values, { setErrors }) => {
     axios.put('/api/users/' + formValues.value.id, values)
         .then((response) => {
             const index = users.value.findIndex(user => user.id === response.data.id);
             users.value[index] = response.data;
             $('#userFormModal').modal('hide');
-        })
-        .finally(() => {
             form.value.resetForm();
         })
+        .catch((error) => {
+            if (error.response.data.errors) {
+                setErrors(error.response.data.errors);
+            }
+        });
 }
 
 </script>
@@ -144,9 +153,7 @@ const updateUser = (values) => {
                                 <th>Options</th>
                             </tr>
                         </thead>
-
                         <tbody>
-
                             <tr v-for="(user, index) in users" :key="user.id">
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ user.name }}</td>
