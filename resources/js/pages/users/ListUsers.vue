@@ -79,7 +79,7 @@ const editUser = (user) => {
     formValues.value = {
         id: user.id,
         name: user.name,
-        email: user.email
+        email: user.email,
     };
     form.value.setValues(formValues.value);
     $('#userFormModal').modal('show');
@@ -165,7 +165,7 @@ const updateUser = (values, { setErrors }) => {
                                 <td>{{ user.email }}</td>
                                 <td>{{ new Date(user.created_at).toLocaleDateString() }} - {{ new
                                     Date(user.created_at).toLocaleTimeString() }}</td>
-                                <td>-</td>
+                                <td>{{ user.role }}</td>
                                 <td>
                                     <a href="#" class="m-1" @click.prevent="editUser(user)">
                                         <i class="fa fa-edit">
