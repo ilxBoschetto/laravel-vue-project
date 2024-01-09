@@ -91,6 +91,7 @@ const deleteUser = (id) => {
             if (response.status = 200) {
                 const index = users.value.findIndex(user => user.id === id);
                 users.value.splice(index, 1);
+                toastr.success('User deleted successfully!');
             }
         })
 }
@@ -170,7 +171,7 @@ const updateUser = (values, { setErrors }) => {
                                         <i class="fa fa-edit">
                                         </i>
                                     </a>
-                                    <a href="#" class="m-1" @click.prevent="deleteUser(user.id)">
+                                    <a href="#" class="m-1 text-danger" @click.prevent="deleteUser(user.id)">
                                         <i class="fa fa-trash"></i>
                                     </a>
                                 </td>

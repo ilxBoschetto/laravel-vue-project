@@ -17,7 +17,9 @@ class UserController extends Controller
     public function store()
     {
         request()->validate([
+            'name' => 'required',
             'email' => 'required|unique:users,email',
+            'password' => 'required|min:8',
         ]);
         return User::create([
             "name" => request("name"),
@@ -29,7 +31,9 @@ class UserController extends Controller
     {
         $user = User::find($id);
         request()->validate([
-            "email"=> 'required|unique:users,email',
+            'name' => 'required',
+            'email' => 'required|unique:users,email',
+            'password' => 'sometimes|min:8',
         ]);
         $user->update([
             "name" => request("name"),
