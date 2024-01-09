@@ -14,9 +14,11 @@ use App\Http\Controllers\ApplicationController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::put('/api/users/{id}', [UserController::class, 'update']);
 Route::get('/api/users', [UserController::class, 'listUsers']);
 Route::post('/api/users', [UserController::class, 'store']);
-Route::put('/api/users/{users}', [UserController::class, 'update']);
+
 
 Route::get('/', function () {
     return view('welcome');

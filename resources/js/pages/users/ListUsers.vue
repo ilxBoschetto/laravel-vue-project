@@ -36,12 +36,11 @@ const createUserSchema = yup.object({
 });
 
 const editUserSchema = yup.object({
-    /*
     name: yup.string().required(),
     email: yup.string().email().required(),
     password: yup.string().when((password, schema) => {
-        return password ? schema.required().min(8) : schema;
-    })*/
+        return (password != "" ? schema.required().min(8) : schema);
+    })
 });
 
 const addUser = () => {
@@ -58,28 +57,26 @@ const editUser = (user) => {
     };
     form.value.setValues(formValues.value);
     $('#userFormModal').modal('show');
-
-    console.log(formValues.value);
 }
 
 const handleSubmit = (values) => {
-    if(editing.value){
+    if (editing.value) {
         updateUser(values);
-    }else{
+    } else {
         createUser(values);
     }
 }
 
 const updateUser = (values) => {
-    axios.put('/api/users' + formValues.value.id, values)
-    .then((response) => {
-        const index = users.values.findIndex(user => user.id === response.data.id);
-        users.value[index] = response.data;
-        $('#userFormModal').modal('hide');
-    })
-    .finally(() => {
-        form.value.resetForm();
-    })
+    axios.put('/api/users/' + formValues.value.id, values)
+        .then((response) => {
+            const index = users.value.findIndex(user => user.id === response.data.id);
+            users.value[index] = response.data;
+            $('#userFormModal').modal('hide');
+        })
+        .finally(() => {
+            form.value.resetForm();
+        })
 }
 
 </script>
@@ -157,7 +154,8 @@ const updateUser = (values) => {
                 <!-- Modal Body -->
                 <div class="modal-body">
                     <!-- Form to insert Name, Email, and Password -->
-                    <Form ref="form" @submit="handleSubmit" :validation-schema="editing ? editUserSchema : createUserSchema" v-slot="{ errors }">
+                    <Form ref="form" @submit="handleSubmit" :validation-schema="editing ? editUserSchema : createUserSchema"
+                        v-slot="{ errors }">
                         <div class="form-group">
                             <label for="name">Name:</label>
                             <Field name="name" type="text" class="form-control" id="name"

@@ -22,8 +22,9 @@ class UserController extends Controller
             "password" => bcrypt(request("password")),
         ]);
     }
-    public function update(User $user)
+    public function update($id)
     {
+        $user = User::find($id);
         $user->update([
             "name" => request("name"),
             "email" => request("email"),
