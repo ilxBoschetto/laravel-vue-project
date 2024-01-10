@@ -11,6 +11,7 @@ const users = ref([]);
 const editing = ref(false);
 let formValues = ref({});
 const form = ref(null);
+const usersReady = ref(false);
 const roles = ref([
     {
         name: 'ADMIN',
@@ -56,6 +57,7 @@ const getUsers = () => {
         .then((response) => {
             users.value = response.data;
             loadingCallback(false);
+            usersReady.value = true;
         })
         .catch(error => {
             loadingCallback(false);
@@ -226,7 +228,7 @@ const changeRole = (user, role) => {
                                 </td>
                             </tr>
                         </tbody>
-                        <tbody v-else>
+                        <tbody v-else-if="usersReady">
                             <tr>
                                 <td colspan="6" class="text-center">No result found ...</td>
                             </tr>

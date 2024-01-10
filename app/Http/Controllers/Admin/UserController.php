@@ -67,9 +67,10 @@ class UserController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function search(){
+    public function search()
+    {
         $searchQuery = request('query');
-        $users = User::where('name','LIKE','%'. $searchQuery .'%')->get();
+        $users = User::where('name', 'LIKE', '%' . $searchQuery . '%')->latest()->get();
         return $users;
     }
 }
