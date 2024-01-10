@@ -17,6 +17,7 @@ use App\Http\Controllers\ApplicationController;
 
 Route::put('/api/users/{id}', [UserController::class, 'update']);
 Route::delete('/api/users/{id}', [UserController::class, 'delete']);
+Route::delete('/api/users', [UserController::class, 'bulkDelete']);
 Route::get('/api/users', [UserController::class, 'listUsers']);
 Route::post('/api/users', [UserController::class, 'store']);
 Route::patch('/api/users/{id}/change-role', [UserController::class, 'changeRole']);

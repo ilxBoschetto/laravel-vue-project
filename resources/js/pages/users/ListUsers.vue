@@ -162,6 +162,45 @@ const changeRole = (user, role) => {
         })
 }
 
+const selectedUsers = ref([]);
+
+const toggleUser = (user) => {
+    const index = selectedUsers.value.indexOf(user.id);
+
+    if (index >= 0) {
+        selectedUsers.value.splice(index, 1);
+    } else {
+        selectedUsers.value.push(user.id);
+    }
+};
+
+const bulkDelete = () => {
+    axios.delete('/api/users', {
+        data: {
+            ids: selectedUsers.value,
+        }
+    }).then((response) => {
+        if (response.status === 200) {
+            users.value.data = users.value.data.filter(user => !selectedUsers.value.includes(user.id));
+            selectedUsers.value = [];
+            selectAll.value = false;
+            toastr.success(response.data.message);
+            search();
+        }
+
+    })
+}
+
+const selectAll = ref(false);
+const selectAllUsers = () => {
+    if (selectAll) {
+        selectedUsers.value = users.value.data.map(user => user.id);
+    } else {
+        selectedUsers.value = [];
+    }
+}
+
+
 </script>
 <template>
     <div class="content-header">
@@ -185,9 +224,15 @@ const changeRole = (user, role) => {
     <div class="content">
         <div class="container-fluid">
             <div class="d-flex justify-content-between">
-                <button @click="addUser()" type="button" class="mb-2 btn btn-primary">
-                    Add New User
-                </button>
+                <div>
+                    <button @click="addUser()" type="button" class="mb-2 btn btn-primary">
+                        Add New User
+                    </button>
+                    <button v-if="selectedUsers.length > 0" @click="bulkDelete()" type="button"
+                        class="ml-2 mb-2 btn btn-danger">
+                        Delete Selected
+                    </button>
+                </div>
                 <div>
                     <input type="text" v-model="searchQuery" class="form-control" placeholder="Search..." />
                 </div>
@@ -197,6 +242,8 @@ const changeRole = (user, role) => {
                     <table id="users-table" class="table table-bordered">
                         <thead>
                             <tr>
+                                <th><input type="checkbox" v-model="selectAll" @change="selectAllUsers"
+                                        :select-all="selectAll" /></th>
                                 <th style="width: 10px">#</th>
                                 <th>Name</th>
                                 <th>Email</th>
@@ -207,6 +254,7 @@ const changeRole = (user, role) => {
                         </thead>
                         <tbody v-if="users.data.length > 0">
                             <tr v-for="(user, index) in users.data" :key="user.id">
+                                <td><input type="checkbox" @click="toggleUser(user)" :checked="selectAll" /></td>
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ user.name }}</td>
                                 <td>{{ user.email }}</td>
@@ -233,7 +281,7 @@ const changeRole = (user, role) => {
                         </tbody>
                         <tbody v-else-if="usersReady">
                             <tr>
-                                <td colspan="6" class="text-center">No result found ...</td>
+                                <td colspan="7" class="text-center">No result found ...</td>
                             </tr>
                         </tbody>
                     </table>
