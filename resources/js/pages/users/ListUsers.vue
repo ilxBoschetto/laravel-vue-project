@@ -13,6 +13,7 @@ const editing = ref(false);
 let formValues = ref({});
 const form = ref(null);
 const usersReady = ref(false);
+const selectAll = ref(false);
 const roles = ref([
     {
         name: 'ADMIN',
@@ -32,6 +33,8 @@ const search = () => {
         }
     }).then((response) => {
         users.value = response.data;
+        selectedUsers.value = [];
+        selectAll.value = false;
     }).catch((error) => {
         console.log(error);
     });
@@ -166,12 +169,12 @@ const selectedUsers = ref([]);
 
 const toggleUser = (user) => {
     const index = selectedUsers.value.indexOf(user.id);
-
-    if (index >= 0) {
-        selectedUsers.value.splice(index, 1);
-    } else {
+    if (index === -1) {
         selectedUsers.value.push(user.id);
+    } else {
+        selectedUsers.value.splice(index, 1);
     }
+    console.log(selectedUsers.value);
 };
 
 const bulkDelete = () => {
@@ -191,9 +194,9 @@ const bulkDelete = () => {
     })
 }
 
-const selectAll = ref(false);
+
 const selectAllUsers = () => {
-    if (selectAll) {
+    if (selectAll.value == true) {
         selectedUsers.value = users.value.data.map(user => user.id);
     } else {
         selectedUsers.value = [];
@@ -224,14 +227,23 @@ const selectAllUsers = () => {
     <div class="content">
         <div class="container-fluid">
             <div class="d-flex justify-content-between">
-                <div>
+                <div class="d-flex ">
                     <button @click="addUser()" type="button" class="mb-2 btn btn-primary">
+                        <i class="fa fa-plus-circle mr-1"></i>
                         Add New User
                     </button>
-                    <button v-if="selectedUsers.length > 0" @click="bulkDelete()" type="button"
-                        class="ml-2 mb-2 btn btn-danger">
-                        Delete Selected
-                    </button>
+                    <div>
+                        <button v-if="selectedUsers.length > 0" @click="bulkDelete()" type="button"
+                            class="ml-2 mb-2 btn btn-danger">
+                            <i class="fa fa-minus-circle mr-1"></i>
+                            Delete Selected
+                        </button>
+                        <span style="text-decoration:underline" class="ml-2 mb-2" v-if="selectedUsers.length > 0">Selected
+                            {{
+                                selectedUsers.length }}
+                            users</span>
+                    </div>
+
                 </div>
                 <div>
                     <input type="text" v-model="searchQuery" class="form-control" placeholder="Search..." />
