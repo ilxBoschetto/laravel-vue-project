@@ -30,11 +30,20 @@ class UserController extends Controller
     public function update($id)
     {
         $user = User::find($id);
-        request()->validate([
-            'name' => 'required',
-            'email' => 'required|unique:users,email',
-            'password' => 'sometimes|min:8',
-        ]);
+        if ($user->email != request("email")) {
+            request()->validate([
+                'name' => 'required',
+                'email' => 'required|unique:users,email',
+                'password' => 'sometimes|min:8',
+            ]);
+        } else {
+            request()->validate([
+                'name' => 'required',
+                'email' => 'required',
+                'password' => 'sometimes|min:8',
+            ]);
+        }
+
         $user->update([
             "name" => request("name"),
             "email" => request("email"),
@@ -48,5 +57,19 @@ class UserController extends Controller
         $user = User::find($id);
         $user->delete();
         return 1;
+    }
+
+    public function changeRole($id)
+    {
+        $user = User::find($id);
+        $user->role = request("role");
+        $user->save();
+        return response()->json(['success' => true]);
+    }
+
+    public function search(){
+        $searchQuery = request('query');
+        $users = User::where('name','LIKE','%'. $searchQuery .'%')->get();
+        return $users;
     }
 }

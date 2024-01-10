@@ -1,15 +1,43 @@
 <script setup>
 import axios from 'axios';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { Form, Field } from 'vee-validate';
 import * as yup from 'yup';
 import { useToastr } from '../../toastr';
+import { debounce } from 'lodash';
 
 const toastr = useToastr();
 const users = ref([]);
 const editing = ref(false);
 let formValues = ref({});
 const form = ref(null);
+const roles = ref([
+    {
+        name: 'ADMIN',
+        value: 1,
+    },
+    {
+        name: 'USER',
+        value: 2,
+    }
+]);
+const searchQuery = ref(null);
+
+const search = () => {
+    axios.get('/api/users/search', {
+        params: {
+            query: searchQuery.value,
+        }
+    }).then((response) => {
+        users.value = response.data;
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
+watch(searchQuery, debounce(() => {
+    search();
+}), 300);
 
 const loadingCallback = (isLoading) => {
     if (isLoading) {
@@ -120,6 +148,15 @@ const updateUser = (values, { setErrors }) => {
         });
 }
 
+const changeRole = (user, role) => {
+    axios.patch('/api/users/' + user.id + '/change-role', {
+        role: role,
+    })
+        .then(() => {
+            toastr.success('Role updated successfully!');
+        })
+}
+
 </script>
 <template>
     <div class="content-header">
@@ -142,9 +179,14 @@ const updateUser = (values, { setErrors }) => {
 
     <div class="content">
         <div class="container-fluid">
-            <button @click="addUser()" type="button" class="mb-2 btn btn-primary">
-                Add New User
-            </button>
+            <div class="d-flex justify-content-between">
+                <button @click="addUser()" type="button" class="mb-2 btn btn-primary">
+                    Add New User
+                </button>
+                <div>
+                    <input type="text" v-model="searchQuery" class="form-control" placeholder="Search..." />
+                </div>
+            </div>
             <div class="card">
                 <div class="card-body">
                     <table id="users-table" class="table table-bordered">
@@ -158,14 +200,21 @@ const updateUser = (values, { setErrors }) => {
                                 <th>Options</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody v-if="users.length > 0">
                             <tr v-for="(user, index) in users" :key="user.id">
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ user.name }}</td>
                                 <td>{{ user.email }}</td>
                                 <td>{{ new Date(user.created_at).toLocaleDateString() }} - {{ new
                                     Date(user.created_at).toLocaleTimeString() }}</td>
-                                <td>{{ user.role }}</td>
+                                <td>
+                                    <select class="form-control" @change="changeRole(user, $event.target.value)">
+                                        <option v-for="role in roles" :value="role.value"
+                                            :selected="(user.role === role.name)">
+                                            {{ role.name }}
+                                        </option>
+                                    </select>
+                                </td>
                                 <td>
                                     <a href="#" class="m-1" @click.prevent="editUser(user)">
                                         <i class="fa fa-edit">
@@ -175,6 +224,11 @@ const updateUser = (values, { setErrors }) => {
                                         <i class="fa fa-trash"></i>
                                     </a>
                                 </td>
+                            </tr>
+                        </tbody>
+                        <tbody v-else>
+                            <tr>
+                                <td colspan="6" class="text-center">No result found ...</td>
                             </tr>
                         </tbody>
                     </table>

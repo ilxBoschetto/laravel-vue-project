@@ -5,3 +5,4 @@ npm install vue
 npm install jquery
 npm install vee-validate --save
 npm install -S yup
+npm install lodash
