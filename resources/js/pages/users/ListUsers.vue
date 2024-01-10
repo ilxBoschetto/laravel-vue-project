@@ -5,9 +5,10 @@ import { Form, Field } from 'vee-validate';
 import * as yup from 'yup';
 import { useToastr } from '../../toastr';
 import { debounce } from 'lodash';
+import { Bootstrap4Pagination } from 'laravel-vue-pagination';
 
 const toastr = useToastr();
-const users = ref([]);
+const users = ref({ 'data': [] });
 const editing = ref(false);
 let formValues = ref({});
 const form = ref(null);
@@ -51,9 +52,9 @@ const loadingCallback = (isLoading) => {
 }
 
 
-const getUsers = () => {
+const getUsers = (page = 1) => {
     loadingCallback(true);
-    axios.get('/api/users')
+    axios.get('/api/users?page=' + page)
         .then((response) => {
             users.value = response.data;
             loadingCallback(false);
@@ -71,10 +72,11 @@ onMounted(() => {
 const createUser = (values, { setErrors }) => {
     axios.post('/api/users', values)
         .then((response) => {
-            users.value.unshift(response.data);
+            users.value.data.unshift(response.data);
             $('#userFormModal').modal('hide');
             form.value.resetForm();
             toastr.success('User created successfully!');
+            search();
         })
         .catch((error) => {
             if (error.response.data.errors) {
@@ -119,9 +121,10 @@ const deleteUser = (id) => {
     axios.delete('/api/users/' + id)
         .then((response) => {
             if (response.status = 200) {
-                const index = users.value.findIndex(user => user.id === id);
-                users.value.splice(index, 1);
+                const index = users.value.data.findIndex(user => user.id === id);
+                users.value.data.splice(index, 1);
                 toastr.success('User deleted successfully!');
+                search();
             }
         })
 }
@@ -137,8 +140,8 @@ const handleSubmit = (values, actions) => {
 const updateUser = (values, { setErrors }) => {
     axios.put('/api/users/' + formValues.value.id, values)
         .then((response) => {
-            const index = users.value.findIndex(user => user.id === response.data.id);
-            users.value[index] = response.data;
+            const index = users.value.data.findIndex(user => user.id === response.data.id);
+            users.value.data[index] = response.data;
             $('#userFormModal').modal('hide');
             form.value.resetForm();
             toastr.success('User updated successfully!');
@@ -202,8 +205,8 @@ const changeRole = (user, role) => {
                                 <th>Options</th>
                             </tr>
                         </thead>
-                        <tbody v-if="users.length > 0">
-                            <tr v-for="(user, index) in users" :key="user.id">
+                        <tbody v-if="users.data.length > 0">
+                            <tr v-for="(user, index) in users.data" :key="user.id">
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ user.name }}</td>
                                 <td>{{ user.email }}</td>
@@ -239,8 +242,10 @@ const changeRole = (user, role) => {
                             <span class="sr-only">Loading...</span>
                         </div>
                     </div>
+
                 </div>
             </div>
+            <Bootstrap4Pagination :data="users" @pagination-change-page="getUsers" />
         </div>
     </div>
     <!-- The Modal -->

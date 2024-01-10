@@ -10,7 +10,7 @@ class UserController extends Controller
 {
     public function listUsers()
     {
-        $users = User::latest()->get();
+        $users = User::latest()->paginate(2);
         return $users;
     }
 
@@ -21,11 +21,12 @@ class UserController extends Controller
             'email' => 'required|unique:users,email',
             'password' => 'required|min:8',
         ]);
-        return User::create([
+        $user = User::create([
             "name" => request("name"),
             "email" => request("email"),
             "password" => bcrypt(request("password")),
         ]);
+        return $user;
     }
     public function update($id)
     {
@@ -70,7 +71,7 @@ class UserController extends Controller
     public function search()
     {
         $searchQuery = request('query');
-        $users = User::where('name', 'LIKE', '%' . $searchQuery . '%')->latest()->get();
+        $users = User::where('name', 'LIKE', '%' . $searchQuery . '%')->latest()->paginate(2);
         return $users;
     }
 }
