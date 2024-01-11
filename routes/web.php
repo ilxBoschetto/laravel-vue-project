@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\AppointmentController;
 use App\Http\Controllers\Admin\UserController;
+use App\Models\Appointment;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApplicationController;
 
@@ -22,6 +24,8 @@ Route::get('/api/users', [UserController::class, 'listUsers']);
 Route::post('/api/users', [UserController::class, 'store']);
 Route::patch('/api/users/{id}/change-role', [UserController::class, 'changeRole']);
 Route::get('/api/users/search', [UserController::class, 'search']);
+
+Route::get('/api/appointments',[AppointmentController::class,'index']);
 
 
 Route::get('/', function () {

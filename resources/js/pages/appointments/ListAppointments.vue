@@ -1,3 +1,21 @@
+<script setup>
+import axios from 'axios';
+import { onMounted, ref } from 'vue';
+
+const appointments = ref([]);
+
+const getAppointments = () => {
+    axios.get('/api/appointments')
+        .then((response) => {
+            appointments.value = response.data;
+            console.log(response.data);
+        })
+}
+onMounted(() => {
+    getAppointments();
+});
+</script>
+
 <template>
     <div class="content-header">
         <div class="container-fluid">
@@ -41,8 +59,13 @@
                                     </button>
 
                                     <button type="button" class="btn btn-default">
-                                        <span class="mr-1">Closed</span>
-                                        <span class="badge badge-pill badge-success">1</span>
+                                        <span class="mr-1">Confirmed</span>
+                                        <span class="badge badge-pill badge-success">0</span>
+                                    </button>
+
+                                    <button type="button" class="btn btn-default">
+                                        <span class="mr-1">Cancelled</span>
+                                        <span class="badge badge-pill badge-danger">0</span>
                                     </button>
                                 </div>
                             </div>
@@ -53,20 +76,22 @@
                                             <tr>
                                                 <th scope="col">#</th>
                                                 <th scope="col">Client Name</th>
-                                                <th scope="col">Date</th>
+                                                <th scope="col">StartDate</th>
                                                 <th scope="col">Time</th>
                                                 <th scope="col">Status</th>
                                                 <th scope="col">Options</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>Mr. Martin Glover MD</td>
-                                                <td>2023-01-27</td>
-                                                <td>05:40 PM</td>
+                                            <tr v-for="(appointment, index) in appointments.data" :key="appointment.id">
+                                                <td>{{ index + 1 }}</td>
+                                                <td>{{ appointment.client.first_name }} {{ appointment.client.last_name }}
+                                                </td>
+                                                <td>{{ appointment.start_time }}</td>
+                                                <td>{{ appointment.end_time }}</td>
                                                 <td>
-                                                    <span class="badge badge-success">closed</span>
+                                                    <span class="badge" :class="`badge-${appointment.status.color}`">{{
+                                                        appointment.status.name }}</span>
                                                 </td>
                                                 <td>
                                                     <a href="">
