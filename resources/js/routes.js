@@ -1,5 +1,6 @@
 import Dashboard from './components/dashboard.vue';
 import ListAppointments from './pages/appointments/ListAppointments.vue';
+import AppointmentForm from './pages/appointments/AppointmentForm.vue';
 import ListUsers from './pages/users/ListUsers.vue';
 import UpdateSetting from './pages/settings/UpdateSetting.vue';
 import UpdateProfile from './pages/profile/UpdateProfile.vue';
@@ -32,5 +33,16 @@ export default [
         path : '/admin/profile',
         name : 'admin.profile',
         component: UpdateProfile,
+    },
+
+    {
+        path : '/admin/appointment/create',
+        name : 'admin.appointments.create',
+        component: AppointmentForm,
+    },
+    {
+        path : '/admin/appointment/:id/edit',
+        name : 'admin.appointment.edit',
+        component: AppointmentForm,
     },
 ]

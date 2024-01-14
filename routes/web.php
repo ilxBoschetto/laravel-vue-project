@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\AppointmentController;
+use App\Http\Controllers\Admin\AppointmentStatusController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\ClientController;
 use App\Models\Appointment;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApplicationController;
@@ -25,8 +27,15 @@ Route::post('/api/users', [UserController::class, 'store']);
 Route::patch('/api/users/{id}/change-role', [UserController::class, 'changeRole']);
 Route::get('/api/users/search', [UserController::class, 'search']);
 
-Route::get('/api/appointments',[AppointmentController::class,'index']);
+Route::get('/api/appointments', [AppointmentController::class, 'index']);
+Route::post('/api/appointment/create', [AppointmentController::class, 'store']);
+Route::get('/api/appointment/{id}/edit', [AppointmentController::class, 'edit']);
+Route::post('/api/appointment/{id}/update', [AppointmentController::class, 'update']);
 
+Route::get('/api/appointment-status', [AppointmentStatusController::class, 'getStatusWithCount']);
+
+
+Route::get('/api/clients', [ClientController::class, 'index']);
 
 Route::get('/', function () {
     return view('welcome');

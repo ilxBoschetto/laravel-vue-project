@@ -7,3 +7,4 @@ npm install vee-validate --save
 npm install -S yup
 npm install lodash
 npm install laravel-vue-pagination
+npm install flatpickr --save

@@ -10,8 +10,16 @@ const getAppointmentStatus = () => {
     axios.get('/api/appointment-status')
         .then((response) => {
             appointmentStatus.value = response.data;
-            console.log(response);
         })
+}
+const loadingCallback = (isLoading) => {
+    if (isLoading) {
+        $('#spinner-wheel').removeClass('d-none');
+        $('#spinner-wheel').addClass('d-flex');
+    } else {
+        $('#spinner-wheel').addClass('d-none');
+        $('#spinner-wheel').removeClass('d-flex');
+    }
 }
 const appointmentsCount = computed(() => {
     return appointmentStatus.value.map(status => status.count).reduce((acc, value) => acc + value, 0);
@@ -22,12 +30,13 @@ const getAppointments = (status) => {
     if (status) {
         params.status = status;
     }
+    loadingCallback(true);
     axios.get('/api/appointments', {
         params: params
     })
         .then((response) => {
             appointments.value = response.data;
-            console.log(response.data);
+            loadingCallback(false);
         })
 }
 onMounted(() => {
@@ -108,9 +117,9 @@ onMounted(() => {
                                                         appointment.status.name }}</span>
                                                 </td>
                                                 <td>
-                                                    <a href="">
+                                                    <router-link :to="`/admin/appointment/${appointment.id}/edit`">
                                                         <i class="fa fa-edit mr-2"></i>
-                                                    </a>
+                                                    </router-link>
 
                                                     <a href="">
                                                         <i class="fa fa-trash text-danger"></i>
@@ -119,6 +128,11 @@ onMounted(() => {
                                             </tr>
                                         </tbody>
                                     </table>
+                                    <div id="spinner-wheel" class="d-flex m-3 justify-content-center">
+                                        <div class="spinner-border opacity-50" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
