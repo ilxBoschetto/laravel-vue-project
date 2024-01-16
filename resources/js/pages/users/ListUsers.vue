@@ -26,22 +26,8 @@ const roles = ref([
 ]);
 const searchQuery = ref(null);
 
-const search = () => {
-    axios.get('/api/users/search', {
-        params: {
-            query: searchQuery.value,
-        }
-    }).then((response) => {
-        users.value = response.data;
-        selectedUsers.value = [];
-        selectAll.value = false;
-    }).catch((error) => {
-        console.log(error);
-    });
-}
-
 watch(searchQuery, debounce(() => {
-    search();
+    getUsers();
 }), 300);
 
 const loadingCallback = (isLoading) => {
@@ -57,7 +43,12 @@ const loadingCallback = (isLoading) => {
 
 const getUsers = (page = 1) => {
     loadingCallback(true);
-    axios.get('/api/users?page=' + page)
+    axios.get('/api/users?page=' + page,
+        {
+            params: {
+                query: searchQuery.value,
+            }
+        })
         .then((response) => {
             users.value = response.data;
             loadingCallback(false);
@@ -79,7 +70,6 @@ const createUser = (values, { setErrors }) => {
             $('#userFormModal').modal('hide');
             form.value.resetForm();
             toastr.success('User created successfully!');
-            search();
         })
         .catch((error) => {
             if (error.response.data.errors) {
@@ -127,7 +117,6 @@ const deleteUser = (id) => {
                 const index = users.value.data.findIndex(user => user.id === id);
                 users.value.data.splice(index, 1);
                 toastr.success('User deleted successfully!');
-                search();
             }
         })
 }
@@ -188,7 +177,6 @@ const bulkDelete = () => {
             selectedUsers.value = [];
             selectAll.value = false;
             toastr.success(response.data.message);
-            search();
         }
 
     })

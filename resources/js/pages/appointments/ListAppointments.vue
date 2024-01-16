@@ -1,7 +1,9 @@
 <script setup>
 import axios from 'axios';
 import { onMounted, ref, computed } from 'vue';
+import { useToastr } from '../../toastr';
 
+const toastr = useToastr();
 const appointments = ref([]);
 const appointmentStatus = ref([]);
 const selectedStatus = ref();
@@ -38,6 +40,20 @@ const getAppointments = (status) => {
             appointments.value = response.data;
             loadingCallback(false);
         })
+}
+const deleteAppointment = (id) => {
+    axios.delete(`/api/appointment/${id}/delete`)
+        .then((response) => {
+            if (response.status = 200) {
+                const indexToRemove = appointments.value.data.findIndex(appointment => appointment.id === id);
+                appointments.value.data.splice(indexToRemove, 1);
+                toastr.success(response.data.message);
+            }
+        })
+        .catch((error) => {
+            toastr.error(error.message);
+        });
+
 }
 onMounted(() => {
     getAppointments();
@@ -121,7 +137,7 @@ onMounted(() => {
                                                         <i class="fa fa-edit mr-2"></i>
                                                     </router-link>
 
-                                                    <a href="">
+                                                    <a href="#" @click.prevent="deleteAppointment(appointment.id)">
                                                         <i class="fa fa-trash text-danger"></i>
                                                     </a>
                                                 </td>

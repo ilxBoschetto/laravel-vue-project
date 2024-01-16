@@ -25,12 +25,12 @@ Route::delete('/api/users', [UserController::class, 'bulkDelete']);
 Route::get('/api/users', [UserController::class, 'listUsers']);
 Route::post('/api/users', [UserController::class, 'store']);
 Route::patch('/api/users/{id}/change-role', [UserController::class, 'changeRole']);
-Route::get('/api/users/search', [UserController::class, 'search']);
 
 Route::get('/api/appointments', [AppointmentController::class, 'index']);
 Route::post('/api/appointment/create', [AppointmentController::class, 'store']);
 Route::get('/api/appointment/{id}/edit', [AppointmentController::class, 'edit']);
 Route::post('/api/appointment/{id}/update', [AppointmentController::class, 'update']);
+Route::delete('/api/appointment/{id}/delete', [AppointmentController::class, 'delete']);
 
 Route::get('/api/appointment-status', [AppointmentStatusController::class, 'getStatusWithCount']);
 

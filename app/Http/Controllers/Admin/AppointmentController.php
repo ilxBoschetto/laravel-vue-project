@@ -82,6 +82,6 @@ class AppointmentController extends Controller
     public function delete($id)
     {
         Appointment::find($id)->delete();
-        return response()->json(['message' => 'Appointment deleted successfully']);
+        return response()->json(['message' => 'Appointment deleted successfully'], 200);
     }
 }
