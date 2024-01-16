@@ -211,12 +211,16 @@
                             </router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link to="/admin/logout" active-class="active" class="nav-link">
-                                <i class="nav-icon fas fa-sign-out-alt"></i>
-                                <p>
-                                    Logout
-                                </p>
-                            </router-link>
+                            <form method="POST" action="{{ route('logout')}}" class="nav-link">
+                                @csrf
+                                <a href="#" onclick="event.preventDefault(); this.closest('form').submit()"
+                                    active-class="active">
+                                    <i class="nav-icon fas fa-sign-out-alt"></i>
+                                    <p>
+                                        Logout
+                                    </p>
+                                </a>
+                            </form>
                         </li>
                     </ul>
                 </nav>
