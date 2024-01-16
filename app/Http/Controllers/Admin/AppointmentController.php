@@ -78,4 +78,10 @@ class AppointmentController extends Controller
         ]);
         return response()->json(['message' => 'Appointment updated successfully']);
     }
+
+    public function delete($id)
+    {
+        Appointment::find($id)->delete();
+        return response()->json(['message' => 'Appointment deleted successfully']);
+    }
 }
