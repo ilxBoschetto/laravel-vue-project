@@ -1,14 +1,26 @@
 <script setup>
 import axios from 'axios';
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
+
+const errorMessage = ref('');
+const loadingRequest = ref(false);
+
 const form = reactive({
     email: '',
     password: '',
 });
 const handleSubmit = () => {
+    loadingRequest.value = true;
+    errorMessage.value = '';
     axios.post('/login', form)
         .then(() => {
             window.location.href = "/admin/dashboard";
+        })
+        .catch((error) => {
+            errorMessage.value = error.response.data.message;
+        })
+        .finally(() => {
+            loadingRequest.value = false;
         })
 }
 </script>
@@ -20,6 +32,9 @@ const handleSubmit = () => {
                 <a href="#" class="h1"><b>Admin</b>Login</a>
             </div>
             <div class="card-body">
+                <div v-if="errorMessage" class="alert alert-danger" role="alert">
+                    {{ errorMessage }}
+                </div>
                 <p class="login-box-msg">Sign in to start your session</p>
                 <form @submit.prevent="handleSubmit">
                     <div class="input-group mb-3">
@@ -42,14 +57,24 @@ const handleSubmit = () => {
                         <div class="col-8">
                             <div class="icheck-primary">
                                 <input type="checkbox" id="remember">
-                                <label for="remember">
+                                <label for="remember" class="ml-1">
                                     Remember Me
                                 </label>
                             </div>
                         </div>
 
                         <div class="col-4">
-                            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                            <button type="submit" id="signInButton" class="btn btn-primary btn-block"
+                                :disabled="loadingRequest">
+                                <div v-if="loadingRequest">
+                                    <div class="spinner-border text-light spinner-border-sm" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                                <span v-else>
+                                    Sign In
+                                </span>
+                            </button>
                         </div>
 
                     </div>
