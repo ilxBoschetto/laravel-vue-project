@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AppointmentController;
 use App\Http\Controllers\Admin\AppointmentStatusController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ClientController;
+use App\Http\Controllers\Admin\DashboardStatController;
 use App\Models\Appointment;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApplicationController;
@@ -32,8 +33,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/appointment/{id}/update', [AppointmentController::class, 'update']);
     Route::delete('/api/appointment/{id}/delete', [AppointmentController::class, 'delete']);
 
+
     Route::get('/api/appointment-status', [AppointmentStatusController::class, 'getStatusWithCount']);
 
+    Route::get('/api/stats/appointments', [DashboardStatController::class, 'appointments']);
 
     Route::get('/api/clients', [ClientController::class, 'index']);
 });
