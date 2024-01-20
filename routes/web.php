@@ -33,10 +33,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/appointment/{id}/update', [AppointmentController::class, 'update']);
     Route::delete('/api/appointment/{id}/delete', [AppointmentController::class, 'delete']);
 
-
     Route::get('/api/appointment-status', [AppointmentStatusController::class, 'getStatusWithCount']);
 
     Route::get('/api/stats/appointments', [DashboardStatController::class, 'appointments']);
+    Route::get('/api/stats/users', [DashboardStatController::class, 'users']);
 
     Route::get('/api/clients', [ClientController::class, 'index']);
 });
