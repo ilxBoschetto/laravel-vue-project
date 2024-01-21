@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AppointmentController;
 use App\Http\Controllers\Admin\AppointmentStatusController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ClientController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\DashboardStatController;
 use App\Models\Appointment;
 use Illuminate\Support\Facades\Route;
@@ -39,6 +40,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/stats/users', [DashboardStatController::class, 'users']);
 
     Route::get('/api/clients', [ClientController::class, 'index']);
+
+    Route::get('/api/settings', [SettingController::class, 'index']);
+    Route::post('/api/settings', [SettingController::class, 'update']);
+
 });
 
 
