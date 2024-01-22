@@ -3,7 +3,7 @@ import axios from 'axios';
 import { ref, onMounted, watch } from 'vue';
 import { Form, Field } from 'vee-validate';
 import * as yup from 'yup';
-import { useToastr } from '../../toastr';
+import { useToastr } from '@/toastr';
 import { debounce } from 'lodash';
 import { Bootstrap4Pagination } from 'laravel-vue-pagination';
 
@@ -258,8 +258,7 @@ const selectAllUsers = () => {
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ user.name }}</td>
                                 <td>{{ user.email }}</td>
-                                <td>{{ new Date(user.created_at).toLocaleDateString() }} - {{ new
-                                    Date(user.created_at).toLocaleTimeString() }}</td>
+                                <td>{{ user.formatted_created_at }}</td>
                                 <td>
                                     <select class="form-control" @change="changeRole(user, $event.target.value)">
                                         <option v-for="role in roles" :value="role.value"

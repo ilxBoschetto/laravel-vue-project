@@ -51,4 +51,8 @@ class User extends Authenticatable
             get: fn($value) => RoleType::from($value)->name,
         );
     }
+    public function getFormattedCreatedAtAttribute()
+    {
+        return $this->created_at->format(settings('date_format'));
+    }
 }

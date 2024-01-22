@@ -17,7 +17,7 @@ return new class extends Migration {
                 'password' => Hash::make('password'),
                 'created_at' => now(),
                 'updated_at' => now(),
-                'role' => 2,
+                'role' => 1,
             )
         );
     }

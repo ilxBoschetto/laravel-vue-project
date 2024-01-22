@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 
+use Carbon\Carbon;
+
 class UserController extends Controller
 {
     public function listUsers()
@@ -15,7 +17,12 @@ class UserController extends Controller
             ->when($searchQuery, function ($query, $searchQuery) {
                 $query->where('name', 'LIKE', '%' . $searchQuery . '%');
             })
-            ->latest()->paginate(8);
+            ->latest()->paginate(settings('pagination_limit'));
+        $users->each(function ($user) {
+            $user->formatted_created_at = Carbon::parse($user->created_at)->format(settings('date_format'));
+        });
+
+        // Include formatted users in the response
         return $users;
     }
 
