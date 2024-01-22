@@ -5,6 +5,8 @@ import { useToastr } from '@/toastr';
 
 const settings = ref([]);
 const toastr = useToastr();
+const errors = ref();
+const loadingRequest = ref(false);
 
 const getSetting = () => {
     axios.get('/api/settings')
@@ -14,13 +16,20 @@ const getSetting = () => {
 };
 
 const updateSettings = () => {
+    loadingRequest.value = true;
+    errors.value = null;
     axios.post('/api/settings', settings.value)
         .then((response) => {
             toastr.success('Settings updated successfully');
         })
         .catch((error) => {
-            toastr.error(error.message);
-        });
+            if (error.response && error.response.status === 422) {
+                errors.value = error.response.data.errors;
+            }
+        })
+        .finally(() => {
+            loadingRequest.value = false;
+        })
 };
 
 onMounted(() => {
@@ -63,6 +72,8 @@ onMounted(() => {
                                             <label for="appName">App Display Name</label>
                                             <input v-model="settings.app_name" type="text" class="form-control" id="appName"
                                                 placeholder="Enter app display name">
+                                            <span class="text-danger text-sm" v-if="errors && errors.app_name">{{
+                                                errors.app_name[0] }}</span>
                                         </div>
                                         <div class="form-group">
                                             <label for="dateFormat">Date Format</label>
@@ -73,17 +84,34 @@ onMounted(() => {
                                                 <option value="Month DD, YYYY">Month DD, YYYY</option>
                                                 <option value="DD Month YYYY">DD Month YYYY</option>
                                             </select>
+                                            <span class="text-danger text-sm" v-if="errors && errors.date_format">{{
+                                                errors.date_format[0] }}</span>
                                         </div>
                                         <div class="form-group">
                                             <label for="paginationLimit">Pagination Limit</label>
                                             <input v-model="settings.pagination_limit" type="text" class="form-control"
                                                 id="paginationLimit" placeholder="Enter pagination limit">
+                                            <span class="text-danger text-sm" v-if="errors && errors.pagination_limit">{{
+                                                errors.pagination_limit[0] }}</span>
                                         </div>
+
                                     </div>
 
                                     <div class="card-footer">
-                                        <button type="submit" class="btn btn-primary"><i class="fa fa-save mr-1"></i>Save
-                                            Changes</button>
+                                        <button type="submit" class="btn btn-primary" :disabled="loadingRequest">
+
+                                            <div v-if="loadingRequest">
+                                                <i class="fa fa-save mr-1"></i>
+                                                <div class="spinner-border text-light spinner-border-sm" role="status">
+                                                    <span class="sr-only">Loading...</span>
+                                                </div>
+                                            </div>
+                                            <div v-else>
+                                                <i class="fa fa-save mr-1"></i>
+                                                Save Changes
+                                            </div>
+
+                                        </button>
                                     </div>
                                 </form>
                             </div>

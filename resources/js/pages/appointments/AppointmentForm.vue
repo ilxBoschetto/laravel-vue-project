@@ -3,7 +3,7 @@ import axios from 'axios';
 import { reactive } from 'vue';
 import { useToastr } from '../../toastr';
 import { useRouter, useRoute } from 'vue-router';
-import { Form, Field } from 'vee-validate';
+import { Form } from 'vee-validate';
 import flatpickr from 'flatpickr';
 import { onMounted, ref } from 'vue';
 import 'flatpickr/dist/themes/light.css'
