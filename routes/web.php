@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AppointmentController;
 use App\Http\Controllers\Admin\AppointmentStatusController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\SettingController;
@@ -43,6 +44,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/api/settings', [SettingController::class, 'index']);
     Route::post('/api/settings', [SettingController::class, 'update']);
+
+    Route::get('/api/profile', [ProfileController::class, 'index']);
+    Route::put('/api/profile', [ProfileController::class, 'update']);
 
 });
 
