@@ -3,7 +3,8 @@ import axios from 'axios';
 import { onMounted, reactive, ref } from 'vue';
 import { useToastr } from '@/toastr';
 
-const loadingRequest = ref(true);
+const loadingRequest = ref(false);
+const errors = ref(false);
 const toastr = useToastr();
 const form = ref({
     name: '',
@@ -18,10 +19,15 @@ const getUser = () => {
 }
 const updateUser = () => {
     loadingRequest.value = true;
+    errors.value = false;
     axios.put('/api/profile', form.value)
         .then((response) => {
             toastr.success("User updated");
-
+        })
+        .catch((error) => {
+            if (error.response && error.response.status === 422) {
+                errors.value = error.response.data.errors;
+            }
         })
         .finally(() => {
             loadingRequest.value = false;
@@ -88,6 +94,8 @@ onMounted(() => {
                                             <div class="col-sm-10">
                                                 <input v-model="form.name" type="text" class="form-control" id="inputName"
                                                     placeholder="Name">
+                                                <span class="text-danger text-sm" v-if="errors && errors.name">{{
+                                                    errors.name[0] }}</span>
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -95,11 +103,13 @@ onMounted(() => {
                                             <div class="col-sm-10">
                                                 <input v-model="form.email" type="email" class="form-control "
                                                     id="inputEmail" placeholder="Email">
+                                                <span class="text-danger text-sm" v-if="errors && errors.email">{{
+                                                    errors.email[0] }}</span>
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <div class="offset-sm-2 col-sm-10">
-                                                <div v-if="loadingRequest === true">
+                                                <div v-if="loadingRequest">
                                                     <button type="submit" class="btn btn-success"
                                                         :disabled="loadingRequest"><i class="fa fa-save mr-1"></i>
                                                         <div class="spinner-border text-light spinner-border-sm"
