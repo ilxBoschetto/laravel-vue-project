@@ -6,6 +6,11 @@ import { useToastr } from '@/toastr';
 const loadingRequest = ref(false);
 const errors = ref(false);
 const toastr = useToastr();
+const changePasswordForm = reactive({
+    current_password: '',
+    new_password: '',
+    confirm_new_password: '',
+});
 const form = ref({
     name: '',
     email: '',
@@ -17,6 +22,19 @@ const getUser = () => {
             form.value = response.data;
         })
 }
+const updateUserPassword = () => {
+    errors.value = false;
+    axios.post('/api/change-user-password', changePasswordForm)
+        .then((response) => {
+            toastr.success(response.data.message);
+            for (const field in changePasswordForm) {
+                changePasswordForm[field] = '';
+            }
+        })
+        .catch((error) => {
+            errors.value = error.response.data.errors;
+        })
+};
 const updateUser = () => {
     loadingRequest.value = true;
     errors.value = false;
@@ -131,35 +149,43 @@ onMounted(() => {
                                 </div>
 
                                 <div class="tab-pane" id="changePassword">
-                                    <form class="form-horizontal">
+                                    <form @submit.prevent="updateUserPassword()" class="form-horizontal">
                                         <div class="form-group row">
                                             <label for="currentPassword" class="col-sm-3 col-form-label">Current
                                                 Password</label>
                                             <div class="col-sm-9">
-                                                <input type="password" class="form-control " id="currentPassword"
+                                                <input v-model="changePasswordForm.current_password" type="password"
+                                                    class="form-control " id="currentPassword"
                                                     placeholder="Current Password">
+                                                <span class="text-danger text-sm"
+                                                    v-if="errors && errors.current_password">{{
+                                                        errors.current_password[0] }}</span>
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <label for="newPassword" class="col-sm-3 col-form-label">New
                                                 Password</label>
                                             <div class="col-sm-9">
-                                                <input type="password" class="form-control " id="newPassword"
-                                                    placeholder="New Password">
+                                                <input v-model="changePasswordForm.new_password" type="password"
+                                                    class="form-control " id="newPassword" placeholder="New Password">
+                                                <span class="text-danger text-sm" v-if="errors && errors.password">{{
+                                                    errors.password[0] }}</span>
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <label for="passwordConfirmation" class="col-sm-3 col-form-label">Confirm
                                                 New Password</label>
                                             <div class="col-sm-9">
-                                                <input type="password" class="form-control " id="passwordConfirmation"
+                                                <input v-model="changePasswordForm.confirm_new_password" type="password"
+                                                    class="form-control " id="passwordConfirmation"
                                                     placeholder="Confirm New Password">
+                                                <span class="text-danger text-sm" v-if="errors && errors.password">{{
+                                                    errors.password[1] }}</span>
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <div class="offset-sm-3 col-sm-9">
                                                 <div>
-                                                    <i class="fa fa-save mr-1"></i>
                                                     <button type="submit" class="btn btn-success"><i
                                                             class="fa fa-save mr-1"></i> Save Changes</button>
                                                 </div>

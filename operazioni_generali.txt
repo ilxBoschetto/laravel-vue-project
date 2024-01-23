@@ -3,6 +3,7 @@ git pull https://github.com/ilxBoschetto/laravel-vue-project.git
 composer update --ignore-platform-reqs
 composer require laravel/fortify
 php artisan vendor:publish --provider="Laravel\Fortify\FortifyServiceProvider"
+composer dump-autoload
 php artisan migrate
 npm install vue
 npm install jquery
