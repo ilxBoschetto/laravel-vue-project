@@ -3,6 +3,7 @@ import axios from 'axios';
 import { onMounted, reactive, ref } from 'vue';
 import { useToastr } from '@/toastr';
 
+const loadingRequest = ref(true);
 const toastr = useToastr();
 const form = ref({
     name: '',
@@ -16,9 +17,14 @@ const getUser = () => {
         })
 }
 const updateUser = () => {
+    loadingRequest.value = true;
     axios.put('/api/profile', form.value)
         .then((response) => {
             toastr.success("User updated");
+
+        })
+        .finally(() => {
+            loadingRequest.value = false;
         })
 }
 onMounted(() => {
@@ -93,9 +99,22 @@ onMounted(() => {
                                         </div>
                                         <div class="form-group row">
                                             <div class="offset-sm-2 col-sm-10">
-                                                <button type="submit" class="btn btn-success"><i
-                                                        class="fa fa-save mr-1"></i> Save
-                                                    Changes</button>
+                                                <div v-if="loadingRequest === true">
+                                                    <button type="submit" class="btn btn-success"
+                                                        :disabled="loadingRequest"><i class="fa fa-save mr-1"></i>
+                                                        <div class="spinner-border text-light spinner-border-sm"
+                                                            role="status">
+                                                            <span class="sr-only">Loading...</span>
+                                                        </div>
+                                                    </button>
+
+                                                </div>
+                                                <div v-else>
+                                                    <button type="submit" class="btn btn-success"><i
+                                                            class="fa fa-save mr-1"></i> Save
+                                                        Changes</button>
+                                                </div>
+
                                             </div>
                                         </div>
                                     </form>
@@ -129,8 +148,12 @@ onMounted(() => {
                                         </div>
                                         <div class="form-group row">
                                             <div class="offset-sm-3 col-sm-9">
-                                                <button type="submit" class="btn btn-success"><i
-                                                        class="fa fa-save mr-1"></i> Save Changes</button>
+                                                <div>
+                                                    <i class="fa fa-save mr-1"></i>
+                                                    <button type="submit" class="btn btn-success"><i
+                                                            class="fa fa-save mr-1"></i> Save Changes</button>
+                                                </div>
+
                                             </div>
                                         </div>
                                     </form>
