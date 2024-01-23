@@ -48,6 +48,7 @@ const deleteAppointment = (id) => {
                 const indexToRemove = appointments.value.data.findIndex(appointment => appointment.id === id);
                 appointments.value.data.splice(indexToRemove, 1);
                 toastr.success(response.data.message);
+                getAppointmentStatus();
             }
         })
         .catch((error) => {
