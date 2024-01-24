@@ -10,6 +10,7 @@ import { Bootstrap4Pagination } from 'laravel-vue-pagination';
 const toastr = useToastr();
 const users = ref({ 'data': [] });
 const editing = ref(false);
+const loadingRequest = ref(false);
 let formValues = ref({});
 const form = ref(null);
 const usersReady = ref(false);
@@ -64,6 +65,7 @@ onMounted(() => {
 
 
 const createUser = (values, { setErrors }) => {
+    loadingRequest.value = true;
     axios.post('/api/users', values)
         .then((response) => {
             users.value.data.unshift(response.data);
@@ -76,6 +78,9 @@ const createUser = (values, { setErrors }) => {
                 setErrors(error.response.data.errors);
             }
 
+        })
+        .finally(() => {
+            loadingRequest.value = false;
         });
 };
 
@@ -118,6 +123,7 @@ const deleteUser = (id) => {
                 users.value.data.splice(index, 1);
                 toastr.success('User deleted successfully!');
             }
+            getUsers();
         })
 }
 
@@ -130,8 +136,10 @@ const handleSubmit = (values, actions) => {
 }
 
 const updateUser = (values, { setErrors }) => {
+    loadingRequest.value = true;
     axios.put('/api/users/' + formValues.value.id, values)
         .then((response) => {
+
             const index = users.value.data.findIndex(user => user.id === response.data.id);
             users.value.data[index] = response.data;
             $('#userFormModal').modal('hide');
@@ -142,6 +150,9 @@ const updateUser = (values, { setErrors }) => {
             if (error.response.data.errors) {
                 setErrors(error.response.data.errors);
             }
+        })
+        .finally(() => {
+            loadingRequest.value = false;
         });
 }
 
@@ -178,7 +189,7 @@ const bulkDelete = () => {
             selectAll.value = false;
             toastr.success(response.data.message);
         }
-
+        getUsers();
     })
 }
 
@@ -202,7 +213,7 @@ const selectAllUsers = () => {
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item"><router-link to="/admin/dashboard">Home</router-link></li>
                         <li class="breadcrumb-item active">Users</li>
                     </ol>
                 </div>
@@ -336,7 +347,16 @@ const selectAllUsers = () => {
                         <!-- Modal Footer -->
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Save</button>
+                            <div v-if="loadingRequest">
+                                <button type="submit" class="btn btn-primary" :disabled="loadingRequest">
+                                    <div class="spinner-border text-light spinner-border-sm" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </button>
+                            </div>
+                            <div v-else>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
                         </div>
                     </Form>
                 </div>

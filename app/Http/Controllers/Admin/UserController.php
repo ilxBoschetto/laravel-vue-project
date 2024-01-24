@@ -38,6 +38,9 @@ class UserController extends Controller
             "email" => request("email"),
             "password" => bcrypt(request("password")),
         ]);
+        $user->role = 2;
+        //return the formatted created_at
+        $user->formatted_created_at = Carbon::parse($user->created_at)->format(settings('date_format'));
         return $user;
     }
     public function update($id)
