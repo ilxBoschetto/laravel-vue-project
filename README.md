@@ -6,16 +6,15 @@ A Laravel + Vue.js application to manage users and their appointments with a das
 
 ✅ User creation and management  
 ✅ Appointment scheduling  
-✅ Dashboard with appointment and user statistics  
 ✅ RESTful API with authentication
 
 ## Screenshots 📸
 
 Users view:  
-![Users Screenshot](screenshots/users.png)
+![Users Screenshot](resources/screenshots/users.png)
 
 Appointments view:  
-![Appointments Screenshot](screenshots/appointments.png)
+![Appointments Screenshot](resources/screenshots/appointments.png)
 
 ## **Tech Stack** 🛠️
 
@@ -28,7 +27,7 @@ Appointments view:
 1. Clone the repository:
     ```sh
     git clone https://github.com/ilxBoschetto/laravel-vue-project.git
-    cd appointment-manager
+    cd laravel-vue-project
     ```
 2. Install dependencies:
     ```sh
